@@ -689,6 +689,62 @@
                 this.renderTable();
                 this.updateSystemInfo();
                 this.startSessionTimer();
+                
+                // 设置跨页面数据同步
+                this.setupCrossPageSync();
+            }
+            
+            // 设置跨页面数据同步
+            setupCrossPageSync() {
+                // 监听storage事件，当其他页面更新数据时同步
+                window.addEventListener('storage', (e) => {
+                    console.log('管理员后台检测到storage变化:', e.key);
+                    
+                    // 如果是我们的数据键被更新
+                    if (e.key && (e.key.includes('confession') || e.key.includes('message'))) {
+                        console.log('管理员后台检测到表白数据更新，重新加载数据...');
+                        
+                        // 重新加载数据
+                        this.loadData();
+                        
+                        // 重新渲染界面
+                        this.updateStats();
+                        this.renderTable();
+                        
+                        // 更新页面标题通知用户
+                        document.title = '(新消息)' + document.title.replace('(新消息)', '');
+                        
+                        // 3秒后移除通知
+                        setTimeout(() => {
+                            document.title = document.title.replace('(新消息)', '');
+                        }, 3000);
+                    }
+                });
+                
+                // 监听自定义事件
+                window.addEventListener('confessionDataUpdated', (e) => {
+                    console.log('管理员后台接收到表白数据更新事件:', e.detail);
+                });
+                
+                // 设置定时检查，作为storage事件的补充
+                setInterval(() => {
+                    const lastUpdated = localStorage.getItem('confessions_last_updated');
+                    if (lastUpdated && (!this.lastUpdatedCheck || parseInt(lastUpdated) > this.lastUpdatedCheck)) {
+                        console.log('管理员后台检测到数据更新，同步中...');
+                        this.lastUpdatedCheck = parseInt(lastUpdated);
+                        
+                        // 重新加载数据
+                        const oldCount = this.confessions.length;
+                        this.loadData();
+                        
+                        // 如果数据有变化，重新渲染
+                        if (oldCount !== this.confessions.length) {
+                            console.log('管理员后台数据同步完成，重新渲染');
+                            this.updateStats();
+                            this.renderTable();
+                        }
+                    }
+                }, 3000); // 每3秒检查一次
             }
 
             // 检查认证状态
@@ -838,8 +894,26 @@
             // 加载数据
             loadData() {
                 try {
-                    const saved = localStorage.getItem('confessions');
-                    this.confessions = saved ? JSON.parse(saved) : [];
+                    // 尝试从多个可能的键加载表白数据，包括全局键
+                    let savedConfessions = null;
+                    const possibleKeys = ['global_confessions', 'confessions', 'frontend_confessions', 'user_confessions'];
+                    
+                    for (const key of possibleKeys) {
+                        const data = localStorage.getItem(key);
+                        if (data) {
+                            try {
+                                savedConfessions = JSON.parse(data);
+                                if (savedConfessions && savedConfessions.length > 0) {
+                                    console.log(`从 ${key} 加载到 ${savedConfessions.length} 条表白`);
+                                    break;
+                                }
+                            } catch (e) {
+                                console.error(`解析 ${key} 失败:`, e);
+                            }
+                        }
+                    }
+                    
+                    this.confessions = savedConfessions || [];
                 } catch (error) {
                     console.error('加载数据失败:', error);
                     this.confessions = [];
@@ -1025,7 +1099,20 @@
 
             // 保存表白数据
             saveConfessions() {
-                localStorage.setItem('confessions', JSON.stringify(this.confessions));
+                // 同时保存到多个键，确保跨页面兼容性
+                const data = JSON.stringify(this.confessions);
+                localStorage.setItem('confessions', data);
+                localStorage.setItem('admin_confessions', data);
+                localStorage.setItem('global_confessions', data); // 添加全局键
+                
+                // 触发自定义事件，通知其他页面数据更新
+                window.dispatchEvent(new CustomEvent('confessionDataUpdated', { detail: this.confessions }));
+                
+                // 添加调试日志
+                console.log(`管理员后台保存了 ${this.confessions.length} 条表白到本地存储`);
+                
+                // 保存最后更新时间
+                localStorage.setItem('confessions_last_updated', Date.now().toString());
             }
 
             // 导出数据
