@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>后台管理系统 - 校园表白墙</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* 登录页面样式 */
+        .admin-login {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .login-header p {
+            color: #666;
+        }
+
+        .login-form .form-group {
+            margin-bottom: 20px;
+        }
+
+        .login-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* 管理后台样式 */
+        .admin-dashboard {
+            min-height: 100vh;
+            background: #f5f7fa;
+        }
+
+        .admin-header {
+            background: white;
+            padding: 20px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-title h1 {
+            color: #667eea;
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .dashboard-content {
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .data-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin: 0;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-input {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            width: 300px;
+            font-size: 14px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .confessions-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .confessions-table th {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: bold;
+            color: #555;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .confessions-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+
+        .confessions-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
+
+        .content-cell {
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .type-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .type-love {
+            background: #e91e63;
+        }
+
+        .type-friendship {
+            background: #4caf50;
+        }
+
+        .type-admiration {
+            background: #ff9800;
+        }
+
+        .type-thanks {
+            background: #9c27b0;
+        }
+
+        .media-preview {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .media-item {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        /* 系统信息样式 */
+        .system-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .media-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .gallery-item {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .admin-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+
+            .table-container {
+                overflow-x: scroll;
+            }
+
+            .confessions-table {
+                min-width: 700px;
+            }
+
+            .admin-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        /* 动画 */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录页面 -->
+    <div id="loginPage" class="admin-login">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>🔐 后台登录</h1>
+                <p>校园表白墙管理系统</p>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">用户名：</label>
+                    <input type="text" id="username" placeholder="请输入管理员用户名" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">密码：</label>
+                    <input type="password" id="password" placeholder="请输入管理员密码" required>
+                </div>
+                
+                <button type="submit" class="login-btn">登录</button>
+                <div id="errorMessage" class="error-message"></div>
+            </form>
+            
+            <div class="back-link">
+                <a href="../用户前台/index.html">← 返回表白墙</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 管理后台页面 -->
+    <div id="dashboardPage" class="admin-dashboard" style="display: none;">
+        <header class="admin-header">
+            <div class="admin-title">
+                <h1>🔐 表白墙后台管理</h1>
+            </div>
+            <div class="admin-actions">
+                <button class="btn btn-secondary" onclick="adminManager.exportData()">导出数据</button>
+                <button class="btn btn-danger" onclick="adminManager.clearAllData()">清空数据</button>
+                <button class="btn btn-primary" onclick="adminManager.logout()">退出登录</button>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- 统计信息 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">💌</div>
+                    <div class="stat-value" id="totalConfessions">0</div>
+                    <div class="stat-label">总表白数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💘</div>
+                    <div class="stat-value" id="loveCount">0</div>
+                    <div class="stat-label">爱情表白</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🤝</div>
+                    <div class="stat-value" id="friendshipCount">0</div>
+                    <div class="stat-label">友情表白</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">❤️</div>
+                    <div class="stat-value" id="totalLikes">0</div>
+                    <div class="stat-label">总点赞数</div>
+                </div>
+            </div>
+
+            <!-- 数据管理 -->
+            <div class="data-section">
+                <div class="section-header">
+                    <h2 class="section-title">表白数据管理</h2>
+                    <div class="search-box">
+                        <input type="text" id="searchInput" class="search-input" placeholder="搜索表白内容...">
+                        <button class="btn btn-primary" onclick="adminManager.searchConfessions()">搜索</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="confessions-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>致</th>
+                                <th>来自</th>
+                                <th>内容</th>
+                                <th>类型</th>
+                                <th>时间</th>
+                                <th>媒体</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="confessionsTableBody">
+                            <!-- 数据将在这里动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 系统信息 -->
+            <div class="data-section">
+                <div class="section-header">
+                    <h2 class="section-title">系统信息</h2>
+                </div>
+                <div class="system-info">
+                    <div>
+                        <div class="info-item">
+                            <span class="info-label">当前时间</span>
+                            <span class="info-value" id="currentTime">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">登录时间</span>
+                            <span class="info-value" id="loginTime">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">会话时长</span>
+                            <span class="info-value" id="sessionDuration">-</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="info-item">
+                            <span class="info-label">浏览器</span>
+                            <span class="info-value" id="browserInfo">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">操作系统</span>
+                            <span class="info-value" id="osInfo">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">屏幕分辨率</span>
+                            <span class="info-value" id="screenResolution">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 查看表白详情弹窗 -->
+    <div id="viewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">表白详情</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="viewModalBody">
+                <!-- 详情内容将在这里动态生成 -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-close-btn">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认删除弹窗 -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">确认删除</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>确定要删除这条表白吗？此操作不可恢复！</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-close-btn">取消</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 后台管理脚本
+        class AdminManager {
+            constructor() {
+                this.confessions = [];
+                this.currentSearch = '';
+                this.deleteTargetId = null;
+                this.loginTime = null;
+                this.sessionTimer = null;
+            }
+
+            // 初始化
+            init() {
+                this.checkAuth();
+                this.loadData();
+                this.bindEvents();
+                this.updateStats();
+                this.renderTable();
+                this.updateSystemInfo();
+                this.startSessionTimer();
+            }
+
+            // 检查认证状态
+            checkAuth() {
+                const isLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
+                const loginTime = parseInt(localStorage.getItem('loginTime') || '0');
+                const currentTime = new Date().getTime();
+                
+                // 检查是否在30分钟内登录
+                const timeDiff = currentTime - loginTime;
+                const isExpired = timeDiff > 30 * 60 * 1000; // 30分钟过期
+
+                if (!isLoggedIn || isExpired) {
+                    localStorage.removeItem('adminLoggedIn');
+                    localStorage.removeItem('loginTime');
+                    this.showLoginPage();
+                    return;
+                }
+
+                this.loginTime = loginTime;
+                // 更新最后登录时间
+                localStorage.setItem('loginTime', currentTime.toString());
+                this.showDashboardPage();
+            }
+
+            // 显示登录页面
+            showLoginPage() {
+                document.getElementById('loginPage').style.display = 'flex';
+                document.getElementById('dashboardPage').style.display = 'none';
+            }
+
+            // 显示管理后台页面
+            showDashboardPage() {
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('dashboardPage').style.display = 'block';
+            }
+
+            // 登录
+            login() {
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+                const errorMessage = document.getElementById('errorMessage');
+                
+                // 默认管理员账号（实际项目中应该使用更安全的认证方式）
+                const adminCredentials = {
+                    username: 'admin',
+                    password: '123456'
+                };
+                
+                if (username === adminCredentials.username && password === adminCredentials.password) {
+                    // 登录成功，保存登录状态
+                    this.loginTime = new Date().getTime();
+                    localStorage.setItem('adminLoggedIn', 'true');
+                    localStorage.setItem('loginTime', this.loginTime.toString());
+                    
+                    // 跳转到管理后台
+                    this.showDashboardPage();
+                    this.init();
+                } else {
+                    errorMessage.textContent = '用户名或密码错误！';
+                    
+                    // 清空密码框
+                    document.getElementById('password').value = '';
+                    
+                    // 添加抖动效果
+                    const form = document.getElementById('loginForm');
+                    form.style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        form.style.animation = '';
+                    }, 500);
+                }
+            }
+
+            // 注销
+            logout() {
+                localStorage.removeItem('adminLoggedIn');
+                localStorage.removeItem('loginTime');
+                this.showLoginPage();
+                this.stopSessionTimer();
+            }
+
+            // 绑定事件
+            bindEvents() {
+                // 登录表单事件
+                const loginForm = document.getElementById('loginForm');
+                if (loginForm) {
+                    loginForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        this.login();
+                    });
+                }
+
+                // 搜索输入框事件
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) {
+                    searchInput.addEventListener('input', (e) => {
+                        this.currentSearch = e.target.value;
+                        this.renderTable();
+                    });
+
+                    // 回车搜索
+                    searchInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            this.searchConfessions();
+                        }
+                    });
+                }
+
+                // 模态框事件
+                this.bindModalEvents();
+            }
+
+            // 绑定模态框事件
+            bindModalEvents() {
+                // 关闭按钮
+                document.querySelectorAll('.modal-close, .modal-close-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        this.closeModals();
+                    });
+                });
+
+                // 点击背景关闭
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.addEventListener('click', (e) => {
+                        if (e.target === modal) {
+                            this.closeModals();
+                        }
+                    });
+                });
+
+                // 确认删除按钮
+                const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+                if (confirmDeleteBtn) {
+                    confirmDeleteBtn.addEventListener('click', () => {
+                        this.confirmDelete();
+                    });
+                }
+            }
+
+            // 关闭所有模态框
+            closeModals() {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.style.display = 'none';
+                });
+            }
+
+            // 加载数据
+            loadData() {
+                try {
+                    const saved = localStorage.getItem('confessions');
+                    this.confessions = saved ? JSON.parse(saved) : [];
+                } catch (error) {
+                    console.error('加载数据失败:', error);
+                    this.confessions = [];
+                }
+            }
+
+            // 更新统计信息
+            updateStats() {
+                const totalConfessions = this.confessions.length;
+                const loveCount = this.confessions.filter(c => c.type === 'love').length;
+                const friendshipCount = this.confessions.filter(c => c.type === 'friendship').length;
+                const totalLikes = this.confessions.reduce((sum, c) => sum + (c.likes || 0), 0);
+
+                document.getElementById('totalConfessions').textContent = totalConfessions;
+                document.getElementById('loveCount').textContent = loveCount;
+                document.getElementById('friendshipCount').textContent = friendshipCount;
+                document.getElementById('totalLikes').textContent = totalLikes;
+            }
+
+            // 渲染表格
+            renderTable() {
+                const tbody = document.getElementById('confessionsTableBody');
+                if (!tbody) return;
+                
+                // 过滤数据
+                let filteredConfessions = this.confessions;
+                if (this.currentSearch.trim()) {
+                    const searchTerm = this.currentSearch.toLowerCase();
+                    filteredConfessions = this.confessions.filter(c => 
+                        c.to.toLowerCase().includes(searchTerm) ||
+                        c.from.toLowerCase().includes(searchTerm) ||
+                        c.content.toLowerCase().includes(searchTerm)
+                    );
+                }
+
+                if (filteredConfessions.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 40px;">
+                                <div style="font-size: 4rem; margin-bottom: 20px;">📭</div>
+                                <p style="color: #888; font-size: 1.2rem;">没有找到匹配的表白数据</p>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                // 生成表格内容
+                tbody.innerHTML = filteredConfessions.map(confession => {
+                    // 格式化类型
+                    const typeLabels = {
+                        love: '爱情表白',
+                        friendship: '友情表白',
+                        admiration: '欣赏表白',
+                        thanks: '感谢表白'
+                    };
+
+                    // 媒体预览
+                    let mediaPreview = '';
+                    if (confession.media && confession.media.length > 0) {
+                        const mediaCount = confession.media.length;
+                        mediaPreview = `<span>${mediaCount} 个文件</span>`;
+                        
+                        // 显示前3个媒体文件的预览
+                        if (confession.media.length <= 3) {
+                            mediaPreview += '<div class="media-preview">';
+                            confession.media.forEach(file => {
+                                if (file.type.startsWith('image/')) {
+                                    mediaPreview += `<img src="${file.data}" class="media-item" alt="${file.name}">`;
+                                } else {
+                                    mediaPreview += `<div class="media-item" style="display: flex; align-items: center; justify-content: center; background: #f0f0f0;">🎬</div>`;
+                                }
+                            });
+                            mediaPreview += '</div>';
+                        }
+                    }
+
+                    // 操作按钮
+                    const actions = `
+                        <div class="table-actions">
+                            <button class="btn btn-primary btn-sm" onclick="adminManager.viewConfession(${confession.id})">查看</button>
+                            <button class="btn btn-danger btn-sm" onclick="adminManager.deleteConfession(${confession.id})">删除</button>
+                        </div>
+                    `;
+
+                    return `
+                        <tr>
+                            <td>${confession.id}</td>
+                            <td>${confession.to}</td>
+                            <td>${confession.from}</td>
+                            <td class="content-cell" title="${confession.content}">${confession.content}</td>
+                            <td><span class="type-badge type-${confession.type}">${typeLabels[confession.type]}</span></td>
+                            <td>${confession.timestamp}</td>
+                            <td>${mediaPreview}</td>
+                            <td>${actions}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // 搜索表白
+            searchConfessions() {
+                this.currentSearch = document.getElementById('searchInput').value.trim();
+                this.renderTable();
+            }
+
+            // 查看表白详情
+            viewConfession(id) {
+                const confession = this.confessions.find(c => c.id === id);
+                if (!confession) return;
+
+                // 获取类型标签
+                const typeLabels = {
+                    love: '爱情表白',
+                    friendship: '友情表白',
+                    admiration: '欣赏表白',
+                    thanks: '感谢表白'
+                };
+
+                const typeIcons = {
+                    love: '💘',
+                    friendship: '🤝',
+                    admiration: '🌟',
+                    thanks: '🙏'
+                };
+
+                // 生成媒体内容
+                let mediaContent = '';
+                if (confession.media && confession.media.length > 0) {
+                    mediaContent = '<div class="media-gallery">';
+                    confession.media.forEach(file => {
+                        if (file.type.startsWith('image/')) {
+                            mediaContent += `<img src="${file.data}" class="gallery-item" alt="${file.name}" onclick="window.open('${file.data}', '_blank')">`;
+                        } else if (file.type.startsWith('video/')) {
+                            mediaContent += `<video src="${file.data}" class="gallery-item" controls></video>`;
+                        }
+                    });
+                    mediaContent += '</div>';
+                }
+
+                const modalBody = document.getElementById('viewModalBody');
+                modalBody.innerHTML = `
+                    <div style="margin-bottom: 15px;">
+                        <p><strong>致：</strong> ${confession.to}</p>
+                        <p><strong>来自：</strong> ${confession.from}</p>
+                        <p><strong>类型：</strong> ${typeIcons[confession.type]} ${typeLabels[confession.type]}</p>
+                        <p><strong>时间：</strong> ${confession.timestamp}</p>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <p><strong>内容：</strong></p>
+                        <p style="line-height: 1.6; padding: 15px; background: #f9f9fa; border-radius: 8px;">${confession.content}</p>
+                    </div>
+                    ${mediaContent ? `
+                        <div>
+                            <p><strong>媒体文件：</strong></p>
+                            ${mediaContent}
+                        </div>
+                    ` : ''}
+                `;
+
+                document.getElementById('viewModal').style.display = 'flex';
+            }
+
+            // 删除表白
+            deleteConfession(id) {
+                this.deleteTargetId = id;
+                document.getElementById('deleteModal').style.display = 'flex';
+            }
+
+            // 确认删除
+            confirmDelete() {
+                if (!this.deleteTargetId) return;
+
+                // 删除表白
+                this.confessions = this.confessions.filter(c => c.id !== this.deleteTargetId);
+                this.saveConfessions();
+                this.renderTable();
+                this.updateStats();
+                
+                this.closeModals();
+                this.deleteTargetId = null;
+            }
+
+            // 保存表白数据
+            saveConfessions() {
+                localStorage.setItem('confessions', JSON.stringify(this.confessions));
+            }
+
+            // 导出数据
+            exportData() {
+                const dataStr = JSON.stringify(this.confessions, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportFileDefaultName = `confessions_${new Date().toISOString().slice(0,10)}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+            }
+
+            // 清空所有数据
+            clearAllData() {
+                if (confirm('确定要清空所有表白数据吗？此操作不可恢复！')) {
+                    this.confessions = [];
+                    this.saveConfessions();
+                    this.renderTable();
+                    this.updateStats();
+                }
+            }
+
+            // 更新系统信息
+            updateSystemInfo() {
+                // 更新当前时间
+                const updateTime = () => {
+                    document.getElementById('currentTime').textContent = new Date().toLocaleString('zh-CN');
+                };
+                updateTime();
+                setInterval(updateTime, 1000);
+
+                // 更新登录时间
+                if (this.loginTime) {
+                    const loginDate = new Date(this.loginTime);
+                    document.getElementById('loginTime').textContent = loginDate.toLocaleString('zh-CN');
+                }
+
+                // 更新浏览器信息
+                const browserInfo = this.getBrowserInfo();
+                document.getElementById('browserInfo').textContent = browserInfo;
+
+                // 更新操作系统信息
+                const osInfo = this.getOSInfo();
+                document.getElementById('osInfo').textContent = osInfo;
+
+                // 更新屏幕分辨率
+                document.getElementById('screenResolution').textContent = `${window.screen.width} × ${window.screen.height}`;
+            }
+
+            // 获取浏览器信息
+            getBrowserInfo() {
+                const userAgent = navigator.userAgent;
+                let browser = "未知浏览器";
+                
+                if (userAgent.indexOf("Firefox") > -1) {
+                    browser = "Mozilla Firefox";
+                } else if (userAgent.indexOf("Chrome") > -1) {
+                    browser = "Google Chrome";
+                } else if (userAgent.indexOf("Safari") > -1) {
+                    browser = "Safari";
+                } else if (userAgent.indexOf("Edge") > -1) {
+                    browser = "Microsoft Edge";
+                } else if (userAgent.indexOf("Opera") > -1 || userAgent.indexOf("OPR") > -1) {
+                    browser = "Opera";
+                } else if (userAgent.indexOf("MSIE") > -1 || userAgent.indexOf("Trident") > -1) {
+                    browser = "Internet Explorer";
+                }
+                
+                return browser;
+            }
+
+            // 获取操作系统信息
+            getOSInfo() {
+                const userAgent = navigator.userAgent;
+                let os = "未知操作系统";
+                
+                if (userAgent.indexOf("Win") > -1) os = "Windows";
+                else if (userAgent.indexOf("Mac") > -1) os = "MacOS";
+                else if (userAgent.indexOf("Linux") > -1) os = "Linux";
+                else if (userAgent.indexOf("Android") > -1) os = "Android";
+                else if (userAgent.indexOf("iOS") > -1) os = "iOS";
+                
+                return os;
+            }
+
+            // 启动会话计时器
+            startSessionTimer() {
+                this.updateSessionDuration();
+                this.sessionTimer = setInterval(() => {
+                    this.updateSessionDuration();
+                }, 60000); // 每分钟更新一次
+            }
+
+            // 停止会话计时器
+            stopSessionTimer() {
+                if (this.sessionTimer) {
+                    clearInterval(this.sessionTimer);
+                    this.sessionTimer = null;
+                }
+            }
+
+            // 更新会话时长
+            updateSessionDuration() {
+                if (!this.loginTime) return;
+
+                const currentTime = new Date().getTime();
+                const sessionDuration = Math.floor((currentTime - this.loginTime) / 1000 / 60); // 分钟
+                
+                const hours = Math.floor(sessionDuration / 60);
+                const minutes = sessionDuration % 60;
+                
+                let durationText = '';
+                if (hours > 0) {
+                    durationText = `${hours} 小时 ${minutes} 分钟`;
+                } else {
+                    durationText = `${minutes} 分钟`;
+                }
+                
+                const durationElement = document.getElementById('sessionDuration');
+                if (durationElement) {
+                    durationElement.textContent = durationText;
+                }
+            }
+        }
+
+        // 创建后台管理实例
+        let adminManager;
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            adminManager = new AdminManager();
+        });
+    </script>
+</body>
+</html>
